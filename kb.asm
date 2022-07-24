@@ -1,50 +1,39 @@
-OldKBHandler: DW 0
-OldKBSeg: DW 0
+OldKBHandler:	DW	0
+OldKBSeg:	DW	0
 
-InstallKB: PUSH ES
-    PUSH BX
-    PUSH DX
-    ; backup old KB interrupt 
-    MOV ax, 0x3509
-    int 0x21
-    mov [OldKBHandler],BX
-    mov [OldKBSeg],ES 
-    mov ah,0x25
-    mov dx, KBHandler 
-    int 0x31
-    pop dx
-    pop BX
-    pop es 
-    ret 
+InstallKB:	PUSH	ES
+		PUSH	BX
+		PUSH	DX
+		; backup old KB interrupt
+		MOV	AX, 0x3509			; get interrupt 9
+		INT	0x21
+		MOV	[OldKBHandler], BX
+		MOV	[OldKBSeg], ES
+		; install new KB interrupt
+		MOV	AH, 0x25
+		MOV	DX, KBHandler
+		INT	0x21
+		POP	DX
+		POP	BX
+		POP	ES
+		RET
 
-RestoreKB: Push DX 
-    PUSH DS
-    mov ax,0x2509
-    mov dx, [OldKBHandler]
-    mov ds, [OldKBSeg]
-    int 0x21
-    pop ds
-    pop dx
-    ret 
+RestoreKB:	PUSH	DX
+		PUSH	DS
+		MOV	AX, 0x2509
+		MOV	DX, [OldKBHandler]
+		MOV	DS, [OldKBSeg]
+		INT	0x21
+		POP	DS
+		POP	DX
+		RET
 
-DirTable: DB 72,75,77,80 
-KBHandler: Push ax
-    push SI
-    in al,0x60
-.testEsc: CMP al,0x01 
-    jne .testDirs
-    mov [Quit],al 
-.testDirs: mov si,0
-    mov ah,4
-.testLoop: cmp al,[DirTable+SI]
-    JE .writeDir
-    INC SI
-    DEC AH
-    JNZ .testLoop
-    JMP .done 
-.writeDir: inc si  
-    mov word [MoveDir],SI 
-.done:
-    out 0x20,al 
-    pop si 
-
+KBHandler:	PUSH	AX
+		IN	AL, 0x60			; get key event
+		CMP	AL, 0x01			; ESC pressed?
+		JNE	.done
+		MOV	[Quit], AL
+.done:		MOV	AL, 0x20			; ACK
+		OUT	0x20, AL			; send ACK
+		POP	AX
+		IRET
