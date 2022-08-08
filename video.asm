@@ -66,19 +66,29 @@ FillScreen:
 
 BlitSprite:	
 		
-		mov si, [Ship] ;still not sure how this works 
+		mov si, Ship;still not sure how this works 
 		mov di,[posX]
-		mov dl,0
-.loop: 
-		mov cx,40 ;Magic number are bad here 40 stands for the width of the box! 
-		mov ax,[Color] 
-		rep movsb  ; mov data in ax cx times to position di
-		mov ax,di ; moves di up by one line of screen space
-		add ax,280
-		mov di,ax 
-		inc dl  
-		cmp dl,40 ; magic numbers are bad! here 40 stands for the height of the box
-		jnz .loop
+		
+		CLD					; increment
+		MOV	CH, 0				; clear hi-counter
+		MOV	DL, 0x10			; 16 rows
+		MOV	CL, 0x08			; 8 word copies
+.loop:							; increment
+						; clear hi-counter
+		; 16 rows
+		MOV	CL, 0x08	
+		rep movsw  ; mov data in ax cx times to position di
+		dec DL
+		jz .done 
+		add di,304
+		jmp .loop
+		; mov ax,di ; moves di up by one line of screen space
+		; add ax,280
+		; mov di,ax 
+		; inc dl  
+		; cmp dl,16 ; magic numbers are bad! here 40 stands for the height of the box
+		; jnz .loop
+.done
 		RET
 
 
