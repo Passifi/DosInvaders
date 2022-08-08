@@ -66,13 +66,13 @@ FillScreen:
 
 BlitSprite:	
 		
-		mov di, [posX] ;still not sure how this works 
-		mov si,[posX]
+		mov si, [Ship] ;still not sure how this works 
+		mov di,[posX]
 		mov dl,0
 .loop: 
 		mov cx,40 ;Magic number are bad here 40 stands for the width of the box! 
 		mov ax,[Color] 
-		rep STOSB ; mov data in ax cx times to position di 
+		rep movsb  ; mov data in ax cx times to position di
 		mov ax,di ; moves di up by one line of screen space
 		add ax,280
 		mov di,ax 

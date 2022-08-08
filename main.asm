@@ -11,7 +11,7 @@ Start:		CALL	InstallKB
 		call FillScreen
 		inc Byte [Counter]
 		call SetDirection
-		call DrawBox
+		call BlitSprite
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
