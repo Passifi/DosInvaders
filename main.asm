@@ -11,7 +11,7 @@ Start:		CALL	InstallKB
 		call FillScreen
 		inc Byte [Counter]
 		call SetDirection
-		call DrawPixel
+		call DrawBox
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
@@ -21,19 +21,19 @@ Start:		CALL	InstallKB
 		INT	0x21
 
 
-Timer:
+Timer: ; wait for time set in WaitInterval, currently also handles  posX update which I think is just legacy 
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
-	inc word [posX]
+	inc word [posX] 
 	mov word [Counter],0
 .notReached:
 	ret
 
-SetDirection: ; reset position values 
+SetDirection: ; takes in the controlByte and changes position values may want to put this in a different folder
 	mov ax, [posY]
 	mov bl, [controlByte]
-	cmp bl, 72
+	cmp bl, 72 
 	jne .checkLeft
 	sub ax,1
 	mov word [posY],ax

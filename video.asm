@@ -10,6 +10,7 @@
 ; First it waits until the end of the current retrace, if we're in one
 ; (if we're in refresh this part of the procedure does nothing)
 ; Then it waits for the end of refresh.
+Ship:		INCBIN	"ship.dat"
 ScrBase: DW 0
 Color: DW 0x000f
 Counter: DW 0x0
@@ -59,20 +60,44 @@ FillScreen:
 		jnz .loop
 		RET
 
-DrawPixel:	
+;so in order to change this to a spriteBlit I think all I need to do is to load in 
+;data instead of one value in ax this means a different copy command(which I do think exists if I recall correcly)
+;
+
+BlitSprite:	
 		
-		mov di, [posX]
+		mov di, [posX] ;still not sure how this works 
 		mov si,[posX]
 		mov dl,0
 .loop: 
-		mov cx,40
-		mov ax,[Color]
-		rep STOSB
-		mov ax,di 
+		mov cx,40 ;Magic number are bad here 40 stands for the width of the box! 
+		mov ax,[Color] 
+		rep STOSB ; mov data in ax cx times to position di 
+		mov ax,di ; moves di up by one line of screen space
 		add ax,280
 		mov di,ax 
-		inc dl
-		cmp dl,40
+		inc dl  
+		cmp dl,40 ; magic numbers are bad! here 40 stands for the height of the box
+		jnz .loop
+		RET
+
+
+
+
+DrawBox:	
+		
+		mov di, [posX] ;still not sure how this works 
+		mov si,[posX]
+		mov dl,0
+.loop: 
+		mov cx,40 ;Magic number are bad here 40 stands for the width of the box! 
+		mov ax,[Color] 
+		rep STOSB ; mov data in ax cx times to position di 
+		mov ax,di ; moves di up by one line of screen space
+		add ax,280
+		mov di,ax 
+		inc dl  
+		cmp dl,40 ; magic numbers are bad! here 40 stands for the height of the box
 		jnz .loop
 		RET
 
