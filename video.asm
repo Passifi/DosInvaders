@@ -45,13 +45,13 @@ RestoreVideo:	; return to text mode 0x03
 
 
 FillScreen:
-	mov di,[posX]
-	mov si,[posX]
+	mov di,[playerScreenPos]
+	mov si,[playerScreenPos]
 	mov dl,0
 .loop: 
-		mov cx,40
-		mov ax,0xff
-		rep STOSB
+		mov cx,20
+		mov ax,0x23
+		rep STOSW
 		mov ax,di 
 		add ax,280
 		mov di,ax 
@@ -67,7 +67,7 @@ FillScreen:
 BlitSprite:	
 		
 		mov si, Ship;still not sure how this works 
-		mov di,[posX]
+		mov di,[playerScreenPos]
 		
 		CLD					; increment
 		MOV	CH, 0				; clear hi-counter

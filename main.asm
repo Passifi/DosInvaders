@@ -8,6 +8,7 @@ Start:		CALL	InstallKB
 		mov DX, 0x00
 		
 .gameLoop:	CALL	WaitFrame
+		call calcPlayerPos
 		call FillScreen
 		inc Byte [Counter]
 		call SetDirection
@@ -53,7 +54,7 @@ SetDirection: ; takes in the controlByte and changes position values may want to
 	jmp .done 
 .checkDown:
 	mov ax,[posY]
-	cmp bl, 78
+	cmp bl, 80
 	jne .done
 	add ax,1
 	mov word [posY],ax
@@ -61,10 +62,27 @@ SetDirection: ; takes in the controlByte and changes position values may want to
 .done
 	ret 
 
+calcPlayerPos:
+	mov ax, 0 
+	mov cx, [posY]
+	cmp cx,0
+	jz .xPart  
+.loopY
+	add ax, 320 
+	dec cx 
+	jnz .loopY
+.xPart
+	add ax,[posX]
+	mov [playerScreenPos],ax 
+ret 
+
+
+
 
 Quit:		DB	0
+playerScreenPos:	DW 0
 posX:	DW 0
-posY: DW 0
+posY: DW 32
 WaitInterval equ 0x05
 controlByte: DB 0
 
