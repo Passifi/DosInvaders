@@ -46,12 +46,12 @@ RestoreVideo:	; return to text mode 0x03
 
 FillScreen:
 	mov di,[playerScreenPos]
-	mov si,[playerScreenPos]
+	
 	mov dl,0
 .loop: 
-		mov cx,20
-		mov ax,0x23
-		rep STOSW
+		mov cx,40
+		mov ax,0xff
+		rep STOSB
 		mov ax,di 
 		add ax,280
 		mov di,ax 
