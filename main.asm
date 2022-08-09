@@ -8,8 +8,9 @@ Start:		CALL	InstallKB
 		mov DX, 0x00
 		
 .gameLoop:	CALL	WaitFrame
-		call calcPlayerPos
 		call FillScreen
+		call calcPlayerPos
+		
 		inc Byte [Counter]
 		call SetDirection
 		call BlitSprite
