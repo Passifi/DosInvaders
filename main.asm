@@ -7,7 +7,8 @@ Start:		CALL	InstallKB
 		MOV CX, 0xffff
 		mov DX, 0x00
 		
-.gameLoop:	CALL	WaitFrame
+.gameLoop:	
+		CALL	WaitFrame
 		call FillScreen
 		call calcPlayerPos
 		
@@ -33,6 +34,7 @@ Timer: ; wait for time set in WaitInterval, currently also handles  posX update 
 	ret
 
 SetDirection: ; takes in the controlByte and changes position values may want to put this in a different folder
+				; redesign 
 	mov ax, [posY]
 	mov bl, [controlByte]
 	cmp bl, 72 
@@ -64,15 +66,23 @@ SetDirection: ; takes in the controlByte and changes position values may want to
 	ret 
 
 calcPlayerPos:
-	mov ax, 0 
+	mov ax, [posY]
 	mov cx, [posY]
-	cmp cx,0
-	jz .xPart  
-.loopY
-	add ax, 320 
-	dec cx 
-	jnz .loopY
-.xPart
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	add ax,cx
 	add ax,[posX]
 	mov [playerScreenPos],ax 
 ret 
@@ -82,10 +92,11 @@ ret
 
 Quit:		DB	0
 playerScreenPos:	DW 0
-posX:	DW 0
+posX:	DW 12
 posY: DW 32
 WaitInterval equ 0x05
 controlByte: DB 0
+keyIntVal: DW 0
 
 %include "kb.asm"
 %include "video.asm"
