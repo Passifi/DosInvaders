@@ -70,7 +70,7 @@ FillScreen:
 ;
 
 BlitSprite:	
-		
+		push si 
 		mov si, Ship;still not sure how this works 
 		mov di,cx
 		
@@ -94,6 +94,7 @@ BlitSprite:
 		; cmp dl,16 ; magic numbers are bad! here 40 stands for the height of the box
 		; jnz .loop
 .done:
+		pop si
 		RET
 
 

@@ -24,7 +24,7 @@ Start:		CALL	InstallKB
 		; exit
 		MOV	AX, 0x4C00
 		INT	0x21
-
+;1e7
 
 Timer: ; wait for time set in WaitInterval, currently also handles  posX update which I think is just legacy 
 
@@ -113,34 +113,34 @@ calcEnemyPos:
 ret 
 
 EnemyHandler:
-	push es 
-	mov di,enemies
+	
+	mov si,0
 	mov bl,3
 .loop:
-	mov ax,[es:di]
-	mov [ePosX],ax
-	inc di
-	inc di 
-	mov ax,[es:di]
-	mov [ePosY],ax
+	mov word ax,  [enemies + si]
+	mov  word [ePosX],ax
+	inc si
+	inc si 
+	mov word ax,[enemies + si]
+	mov word [ePosY],ax
 	call calcEnemyPos
-	mov cx, [enemyScreenPos]
+	mov word cx, [enemyScreenPos]
 	call BlitSprite
-	inc di 
-	inc di
-	mov ax,[es:di]
-	mov [ePosX],ax
-	inc di
-	inc di 
-	mov ax,[es:di]
-	mov [ePosY],ax
+	inc si
+	inc si
+	mov word ax,[enemies + si]
+	mov word [ePosX],ax
+	inc si
+	inc si 
+	mov word ax,[enemies + si]
+	mov word [ePosY],ax
 	call calcEnemyPos
-	mov cx, [enemyScreenPos]
+	mov word cx, [enemyScreenPos]
 	call BlitSprite
 	
 	
 	
-pop es
+
 	
 ret 
 
@@ -154,7 +154,7 @@ keyIntVal: DW 0
 enemyScreenPos: DW 0
 ePosX: dw 0
 ePosY: dw 0
-enemies: dw 160,122,160,60,20,20
+enemies: dw 160,122,160,12
 enemieArrLength: db 1
 
 %include "kb.asm"
