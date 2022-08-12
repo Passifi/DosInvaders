@@ -10,6 +10,11 @@
 ; First it waits until the end of the current retrace, if we're in one
 ; (if we're in refresh this part of the procedure does nothing)
 ; Then it waits for the end of refresh.
+
+
+SpriteWitdth equ 40
+ScreenWidth equ 320
+ScreenHeight equ 200
 Ship:		INCBIN	"ship.dat"
 ScrBase: DW 0
 Color: DW 0x000f
@@ -49,14 +54,14 @@ FillScreen:
 	
 	mov dl,0
 .loop: 
-		mov cx,40
+		mov cx,SpriteWitdth
 		mov ax,0xff
 		rep STOSB
 		mov ax,di 
-		add ax,280
+		add ax,ScreenWidth-SpriteWitdth
 		mov di,ax 
 		inc dl
-		cmp dl,40
+		cmp dl,ScreenWidth
 		jnz .loop
 		RET
 
@@ -88,7 +93,7 @@ BlitSprite:
 		; inc dl  
 		; cmp dl,16 ; magic numbers are bad! here 40 stands for the height of the box
 		; jnz .loop
-.done
+.done:
 		RET
 
 
@@ -100,14 +105,14 @@ DrawBox:
 		mov si,[posX]
 		mov dl,0
 .loop: 
-		mov cx,40 ;Magic number are bad here 40 stands for the width of the box! 
+		mov cx,SpriteWitdth ;Magic number are bad here 40 stands for the width of the box! 
 		mov ax,[Color] 
 		rep STOSB ; mov data in ax cx times to position di 
 		mov ax,di ; moves di up by one line of screen space
-		add ax,280
+		add ax,ScreenWidth-SpriteWitdth
 		mov di,ax 
 		inc dl  
-		cmp dl,40 ; magic numbers are bad! here 40 stands for the height of the box
+		cmp dl,SpriteWitdth ; magic numbers are bad! here 40 stands for the height of the box
 		jnz .loop
 		RET
 

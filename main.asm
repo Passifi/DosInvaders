@@ -16,8 +16,7 @@ Start:		CALL	InstallKB
 		call SetDirection
 		mov cx, [playerScreenPos]
 		call BlitSprite
-		mov cx, [enemyScreenPos]
-		call BlitSprite
+		call EnemyHandler
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
@@ -45,6 +44,7 @@ SetDirection: ; takes in the controlByte and changes position values may want to
 	sub ax,1
 	mov word [posY],ax
 	jmp .done 
+
 .checkLeft:
 	mov ax,[posX]
 	cmp bl, 75
@@ -112,7 +112,28 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
+EnemyHandler:
+	mov di,0
+	mov bl,[enemieArrLength]
+.loop:
+	mov ax,[enemies+di]
+	mov [ePosX],ax
+	inc di
+	inc di 
+	mov ax,[enemies+di]
+	mov [ePosY],ax
+	inc di
+	inc di
+	call calcEnemyPos
+	mov cx, [enemyScreenPos]
+	call BlitSprite
+	
+	dec bl
+	jnz .loop 
+	
 
+	
+ret 
 
 Quit:		DB	0
 playerScreenPos:	DW 0
@@ -122,8 +143,10 @@ WaitInterval equ 0x05
 controlByte: DB 0
 keyIntVal: DW 0
 enemyScreenPos: DW 0
-ePosX: dw 160
-ePosY: dw 10
+ePosX: dw 0
+ePosY: dw 0
+enemies: dw 12,12,120,0
+enemieArrLength: db 2
 
 %include "kb.asm"
 %include "video.asm"
