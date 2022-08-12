@@ -113,25 +113,34 @@ calcEnemyPos:
 ret 
 
 EnemyHandler:
-	mov di,0
-	mov bl,[enemieArrLength]
+	push es 
+	mov di,enemies
+	mov bl,3
 .loop:
-	mov ax,[enemies+di]
+	mov ax,[es:di]
 	mov [ePosX],ax
 	inc di
 	inc di 
-	mov ax,[enemies+di]
+	mov ax,[es:di]
 	mov [ePosY],ax
+	call calcEnemyPos
+	mov cx, [enemyScreenPos]
+	call BlitSprite
+	inc di 
 	inc di
+	mov ax,[es:di]
+	mov [ePosX],ax
 	inc di
+	inc di 
+	mov ax,[es:di]
+	mov [ePosY],ax
 	call calcEnemyPos
 	mov cx, [enemyScreenPos]
 	call BlitSprite
 	
-	dec bl
-	jnz .loop 
 	
-
+	
+pop es
 	
 ret 
 
@@ -145,8 +154,8 @@ keyIntVal: DW 0
 enemyScreenPos: DW 0
 ePosX: dw 0
 ePosY: dw 0
-enemies: dw 12,12,120,0
-enemieArrLength: db 2
+enemies: dw 160,122,160,60,20,20
+enemieArrLength: db 1
 
 %include "kb.asm"
 %include "video.asm"
