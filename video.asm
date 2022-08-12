@@ -67,7 +67,7 @@ FillScreen:
 BlitSprite:	
 		
 		mov si, Ship;still not sure how this works 
-		mov di,[playerScreenPos]
+		mov di,cx
 		
 		CLD					; increment
 		MOV	CH, 0				; clear hi-counter

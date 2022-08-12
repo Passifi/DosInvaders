@@ -14,6 +14,9 @@ Start:		CALL	InstallKB
 		
 		inc Byte [Counter]
 		call SetDirection
+		mov cx, [playerScreenPos]
+		call BlitSprite
+		mov cx, [enemyScreenPos]
 		call BlitSprite
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
@@ -87,16 +90,40 @@ calcPlayerPos:
 	mov [playerScreenPos],ax 
 ret 
 
+calcEnemyPos:
+	mov ax, [ePosY]
+	mov cx, [ePosY]
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	add ax,cx
+	add ax,[ePosX]
+	mov [enemyScreenPos],ax 
+ret 
 
 
 
 Quit:		DB	0
 playerScreenPos:	DW 0
 posX:	DW 12
-posY: DW 32
+posY: DW 180
 WaitInterval equ 0x05
 controlByte: DB 0
 keyIntVal: DW 0
+enemyScreenPos: DW 0
+ePosX: dw 160
+ePosY: dw 10
 
 %include "kb.asm"
 %include "video.asm"
