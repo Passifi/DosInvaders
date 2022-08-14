@@ -9,13 +9,15 @@ Start:		CALL	InstallKB
 		
 .gameLoop:	
 		CALL	WaitFrame
-		call FillScreen
+		mov cx, [playerScreenPos]
+		call ClearSprite
 		call calcPlayerPos
 		
 		inc Byte [Counter]
 		call SetDirection
 		mov cx, [playerScreenPos]
 		call BlitSprite
+		
 		call EnemyHandler
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
@@ -30,7 +32,7 @@ Timer: ; wait for time set in WaitInterval, currently also handles  posX update 
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
-	inc word [posX] 
+	call MoveEnemies
 	mov word [Counter],0
 .notReached:
 	ret
@@ -112,11 +114,35 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
+MoveEnemies: 
+	push si 
+	mov si,0
+	mov ax,[enemies+si]
+	inc ax 
+	mov [enemies+si],ax
+
+	inc si
+	inc si
+	inc si
+	inc si
+	mov ax,[enemies+si]
+	inc ax 
+	mov [enemies+si],ax
+	
+	pop si
+	ret 
+	
+
 EnemyHandler:
 	
 	mov si,0
 	mov bl,3
 .loop:
+	mov cx,[oldEnemiePos] ; erease enemy sprites 
+	call ClearSprite
+	mov cx,[oldEnemiePos+2] 
+	call ClearSprite
+	call Timer
 	mov word ax,  [enemies + si]
 	mov  word [ePosX],ax
 	inc si
@@ -125,6 +151,7 @@ EnemyHandler:
 	mov word [ePosY],ax
 	call calcEnemyPos
 	mov word cx, [enemyScreenPos]
+	mov [oldEnemiePos],cx 
 	call BlitSprite
 	inc si
 	inc si
@@ -136,6 +163,7 @@ EnemyHandler:
 	mov word [ePosY],ax
 	call calcEnemyPos
 	mov word cx, [enemyScreenPos]
+	mov [oldEnemiePos+2],cx
 	call BlitSprite
 	
 	
@@ -155,10 +183,11 @@ enemyScreenPos: DW 0
 ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
-enemieArrLength: db 1
-
-%include "kb.asm"
+oldEnemiePos: dw 0,0
+enemieArrLength: db 2
 %include "video.asm"
+%include "kb.asm"
+
 ; start with automated movement !! 
 ; then try and control it ! 
 ; then sprite drawing ! 

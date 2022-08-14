@@ -1,18 +1,4 @@
-; the VGA hardware is always in one of two states:
-; * refresh, where the screen gets redrawn.
-;            This is the state the VGA is in most of the time.
-; * retrace, a relatively short period when the electron gun is returning to
-;            the top left of the screen, from where it will begin drawing the
-;            next frame to the monitor. Ideally, we write the next frame to
-;            the video memory entirely during retrace, so each refresh is
-;            only drawing one full frame
-; The following procedure waits until the *next* retrace period begins.
-; First it waits until the end of the current retrace, if we're in one
-; (if we're in refresh this part of the procedure does nothing)
-; Then it waits for the end of refresh.
-
-
-SpriteWitdth equ 40
+SpriteWitdth equ 16
 ScreenWidth equ 320
 ScreenHeight equ 200
 Ship:		INCBIN	"ship.dat"
@@ -49,8 +35,8 @@ RestoreVideo:	; return to text mode 0x03
 		RET
 
 
-FillScreen:
-	mov di,[playerScreenPos]
+ClearSprite:
+	mov di,cx
 	
 	mov dl,0
 .loop: 
@@ -61,7 +47,7 @@ FillScreen:
 		add ax,ScreenWidth-SpriteWitdth
 		mov di,ax 
 		inc dl
-		cmp dl,ScreenWidth
+		cmp dl, SpriteWitdth
 		jnz .loop
 		RET
 
