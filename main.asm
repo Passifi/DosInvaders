@@ -19,6 +19,7 @@ Start:		CALL	InstallKB
 		call BlitSprite
 		
 		call EnemyHandler
+		call DrawShot
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
@@ -28,7 +29,7 @@ Start:		CALL	InstallKB
 		INT	0x21
 ;1e7
 
-Timer: ; wait for time set in WaitInterval, currently also handles  posX update which I think is just legacy 
+Timer: 
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
@@ -37,8 +38,8 @@ Timer: ; wait for time set in WaitInterval, currently also handles  posX update 
 .notReached:
 	ret
 
-SetDirection: ; takes in the controlByte and changes position values may want to put this in a different folder
-				; redesign 
+SetDirection: ; current issue sometimes a keystroke is ignored 
+				 
 	mov ax, [posY]
 	mov bl, [controlByte]
 	cmp bl, 72 
@@ -114,6 +115,28 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
+calcShotPos:
+	mov ax, [shotPos+2]
+	mov cx, [shotPos+2]
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	add ax,cx
+	add ax,[shotPos]
+	mov [processedShotPos],ax 
+ret 
+
 MoveEnemies: 
 	push si 
 	mov si,0
@@ -141,7 +164,8 @@ EnemyHandler:
 	mov cx,[oldEnemiePos+2] 
 	call ClearSprite
 
-	call Timer
+	call Timer 
+	; rebuild to loop 
 	; firstEnemy
 	mov word ax,  [enemies + si]
 	mov  word [ePosX],ax
@@ -185,11 +209,10 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
+shotPos: dw 0,0
+processedShotPos: dw 0
 enemieArrLength: db 2
 %include "video.asm"
 %include "kb.asm"
 
-; start with automated movement !! 
-; then try and control it ! 
-; then sprite drawing ! 
 

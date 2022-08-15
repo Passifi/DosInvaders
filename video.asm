@@ -98,3 +98,20 @@ DrawBox:
 		jnz .loop
 		RET
 
+DrawShot:	
+		
+		mov di, 24 
+		mov si,24
+		mov dl,0
+.loop: 
+		mov cx,2
+		mov ax,[Color] 
+		rep STOSB ; mov data in ax cx times to position di 
+		mov ax,di ; moves di up by one line of screen space
+		add ax,ScreenWidth-2
+		mov di,ax 
+		inc dl  
+		cmp dl,8 
+		jnz .loop
+		RET
+
