@@ -57,7 +57,7 @@ ClearSprite:
 
 BlitSprite:	
 		push si 
-		mov si, Ship;still not sure how this works 
+		mov si, Ship
 		mov di,cx
 		
 		CLD					; increment
@@ -73,12 +73,7 @@ BlitSprite:
 		jz .done 
 		add di,304
 		jmp .loop
-		; mov ax,di ; moves di up by one line of screen space
-		; add ax,280
-		; mov di,ax 
-		; inc dl  
-		; cmp dl,16 ; magic numbers are bad! here 40 stands for the height of the box
-		; jnz .loop
+		
 .done:
 		pop si
 		RET
@@ -88,18 +83,18 @@ BlitSprite:
 
 DrawBox:	
 		
-		mov di, [posX] ;still not sure how this works 
+		mov di, [posX] 
 		mov si,[posX]
 		mov dl,0
 .loop: 
-		mov cx,SpriteWitdth ;Magic number are bad here 40 stands for the width of the box! 
+		mov cx,SpriteWitdth
 		mov ax,[Color] 
 		rep STOSB ; mov data in ax cx times to position di 
 		mov ax,di ; moves di up by one line of screen space
 		add ax,ScreenWidth-SpriteWitdth
 		mov di,ax 
 		inc dl  
-		cmp dl,SpriteWitdth ; magic numbers are bad! here 40 stands for the height of the box
+		cmp dl,SpriteWitdth 
 		jnz .loop
 		RET
 

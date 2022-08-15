@@ -121,10 +121,7 @@ MoveEnemies:
 	inc ax 
 	mov [enemies+si],ax
 
-	inc si
-	inc si
-	inc si
-	inc si
+	add si,4
 	mov ax,[enemies+si]
 	inc ax 
 	mov [enemies+si],ax
@@ -138,11 +135,14 @@ EnemyHandler:
 	mov si,0
 	mov bl,3
 .loop:
+
 	mov cx,[oldEnemiePos] ; erease enemy sprites 
 	call ClearSprite
 	mov cx,[oldEnemiePos+2] 
 	call ClearSprite
+
 	call Timer
+	; firstEnemy
 	mov word ax,  [enemies + si]
 	mov  word [ePosX],ax
 	inc si
@@ -153,6 +153,7 @@ EnemyHandler:
 	mov word cx, [enemyScreenPos]
 	mov [oldEnemiePos],cx 
 	call BlitSprite
+	; secondEnemy
 	inc si
 	inc si
 	mov word ax,[enemies + si]
