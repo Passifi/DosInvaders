@@ -29,6 +29,8 @@ Start:		CALL	InstallKB
 		INT	0x21
 ;1e7
 
+
+
 Timer: 
 
 	CMP Byte [Counter],WaitInterval
@@ -68,7 +70,7 @@ SetDirection: ; current issue sometimes a keystroke is ignored
 	add ax,1
 	mov word [posY],ax
 	
-.done
+.done:
 	ret 
 
 calcPlayerPos:
@@ -114,6 +116,22 @@ calcEnemyPos:
 	add ax,[ePosX]
 	mov [enemyScreenPos],ax 
 ret 
+
+processShots:
+	push BX
+	mov bx,[shotIndexStart]
+	shl bx 
+	mov si,bx
+	mov ax,[shots+si]
+	mov [shotPos],ax
+	inc si
+	inc si 
+	mov ax,[shots+si]
+	mov [shotPos+2],ax 
+	call calcShotPos
+	call DrawShot
+	
+
 
 calcShotPos:
 	mov ax, [shotPos+2]
@@ -209,8 +227,14 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
+shots: dw 0,0,0,0,0,0,0,0
+shotIndexStart: db 0
+shotIndexEnd: db 0
+
 shotPos: dw 0,0
-processedShotPos: dw 0
+processedShotPos: dw 0,-1,-1,-1,-1
+
+
 enemieArrLength: db 2
 %include "video.asm"
 %include "kb.asm"
