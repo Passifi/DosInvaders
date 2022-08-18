@@ -17,9 +17,9 @@ Start:		CALL	InstallKB
 		call SetDirection
 		mov cx, [playerScreenPos]
 		call BlitSprite
-		
+		call processShots
 		call EnemyHandler
-		call DrawShot
+		
 		CMP	BYTE [Quit], 1
 		JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
@@ -119,9 +119,12 @@ ret
 
 processShots:
 	push BX
+	push si
 	mov bx,[shotIndexStart]
-	shl bx 
+	shl bx,1 
 	mov si,bx
+	shr bx,1 
+.loop:
 	mov ax,[shots+si]
 	mov [shotPos],ax
 	inc si
@@ -130,6 +133,14 @@ processShots:
 	mov [shotPos+2],ax 
 	call calcShotPos
 	call DrawShot
+	inc si 
+	inc si
+	inc bx 
+	cmp bx,[shotIndexEnd] 
+	jnz .loop 
+	pop bx
+	pop si 
+ret 
 	
 
 
@@ -229,7 +240,7 @@ enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
 shots: dw 0,0,0,0,0,0,0,0
 shotIndexStart: db 0
-shotIndexEnd: db 0
+shotIndexEnd: db 3
 
 shotPos: dw 0,0
 processedShotPos: dw 0,-1,-1,-1,-1
