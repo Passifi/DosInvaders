@@ -8,8 +8,10 @@ Start:		CALL	InstallKB
 		mov DX, 0x00
 		
 .gameLoop:	
+		
 		CALL	WaitFrame
 		mov cx, [playerScreenPos]
+		
 		call ClearSprite
 		call calcPlayerPos
 		
@@ -17,11 +19,12 @@ Start:		CALL	InstallKB
 		call SetDirection
 		mov cx, [playerScreenPos]
 		call BlitSprite
-		call processShots
+		
+		;call processShots
 		call EnemyHandler
 		
 		CMP	BYTE [Quit], 1
-		JNE	.gameLoop			; loop if counter > 0
+JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
 		CALL	RestoreKB
 		; exit
@@ -131,6 +134,7 @@ processShots:
 	inc si 
 	mov ax,[shots+si] ; also 0
 	mov [shotPosY],ax 
+	;inc byte [shots+si] causes a crash... Why?
 	call calcShotPos ; creates shot at 0,0 puts it into shotpos for calc
 	call DrawShot
 	inc si  
@@ -140,6 +144,38 @@ processShots:
 	jnz .loop 
 	pop bx
 	pop si 
+	
+ret 
+
+processShotsErase:
+	push BX
+	push si
+	mov bl,[shotIndexStart] ; should be 0
+	shl bl,1  ; should still be 0
+	mov si,bx 
+	shr bx,1  ; should still be 0
+.loop:
+	mov ax,[shots+si] ; this should be 0
+	mov [shotPosX],ax ; loads in x
+	inc si
+	inc si 
+	mov ax,[shots+si] ; also 0
+	mov [shotPosY],ax 
+	;inc byte [shots+si] causes a crash... Why?
+	call calcShotPos ; creates shot at 0,0 puts it into shotpos for calc
+	mov cx, [processedShotPos]
+	call ClearSprite
+	inc si  
+	inc si
+	inc bl
+	cmp bl,[shotIndexEnd] 
+	jnz .loop 
+	pop bx
+	pop si 
+	dec word [shots+1] 
+	dec word [shots+3]
+	dec word [shots+5]
+	
 ret 
 	
 
@@ -168,6 +204,7 @@ ret
 
 MoveEnemies: 
 	push si 
+	push ax
 	mov si,0
 	mov ax,[enemies+si]
 	inc ax 
@@ -177,7 +214,7 @@ MoveEnemies:
 	mov ax,[enemies+si]
 	inc ax 
 	mov [enemies+si],ax
-	
+	pop ax	
 	pop si
 	ret 
 	
@@ -186,6 +223,7 @@ EnemyHandler:
 	
 	mov si,0
 	mov bl,3
+
 .loop:
 
 	mov cx,[oldEnemiePos] ; erease enemy sprites 
@@ -238,7 +276,7 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
-shots: dw 12,24,12,12,23,23,0,0
+shots: dw 12,180,12,180,23,180,0,0
 shotIndexStart: db 0
 shotIndexEnd: db 3
 

@@ -29,7 +29,7 @@ RestoreKB:	PUSH	DX
 		RET
 
 KBHandler:	PUSH	AX
-		
+		push si 
 		
 		mov byte [controlByte],0 ; reset control byte 
 		IN	AL, 0x60			; get key event
@@ -50,7 +50,9 @@ KBHandler:	PUSH	AX
 	
 .done:		MOV	AL, 0x20			; ACK
 		OUT	0x20, AL			; send ACK
- 		POP	AX
+ 		pop si
+		POP	AX
+		
 		IRET
 
 movDir: DB 72,75,77,80 ; up left right down

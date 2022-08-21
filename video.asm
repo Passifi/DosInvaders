@@ -36,6 +36,7 @@ RestoreVideo:	; return to text mode 0x03
 
 
 ClearSprite:
+	push di 
 	mov di,cx
 	
 	mov dl,0
@@ -49,6 +50,7 @@ ClearSprite:
 		inc dl
 		cmp dl, SpriteWitdth
 		jnz .loop
+	pop di
 		RET
 
 ;so in order to change this to a spriteBlit I think all I need to do is to load in 
@@ -57,6 +59,7 @@ ClearSprite:
 
 BlitSprite:	
 		push si 
+		push di 
 		mov si, Ship
 		mov di,cx
 		
@@ -75,32 +78,36 @@ BlitSprite:
 		jmp .loop
 		
 .done:
+		pop di
 		pop si
 		RET
 
 
 
 
-DrawBox:	
-		
-		mov di, [posX] 
-		mov si,[posX]
-		mov dl,0
-.loop: 
-		mov cx,SpriteWitdth
-		mov ax,[Color] 
-		rep STOSB ; mov data in ax cx times to position di 
+clearScreen:	
+		push di
+		push si 
+		mov di, 0 
+		mov dx,0
+	.loop: 
+		mov cx,ScreenWidth/2
+		mov ax,0xff
+		rep STOSW ; mov data in ax cx times to position di 
 		mov ax,di ; moves di up by one line of screen space
-		add ax,ScreenWidth-SpriteWitdth
+		add ax,ScreenWidth
 		mov di,ax 
-		inc dl  
-		cmp dl,SpriteWitdth 
-		jnz .loop
-		RET
+		inc dx
+		cmp dx,ScreenHeight 
+	jnz .loop
+		pop si 
+		pop di
+RET
 
 DrawShot:	
-		
-		mov di, 24 
+		push si 
+		push di
+		mov di, [processedShotPos]
 		mov si,24
 		mov dl,0
 .loop: 
@@ -113,5 +120,7 @@ DrawShot:
 		inc dl  
 		cmp dl,8 
 		jnz .loop
+		pop di
+		pop si
 		RET
 
