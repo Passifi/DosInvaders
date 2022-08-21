@@ -120,23 +120,23 @@ ret
 processShots:
 	push BX
 	push si
-	mov bx,[shotIndexStart]
-	shl bx,1 
-	mov si,bx
-	shr bx,1 
+	mov bl,[shotIndexStart] ; should be 0
+	shl bl,1  ; should still be 0
+	mov si,bx 
+	shr bx,1  ; should still be 0
 .loop:
-	mov ax,[shots+si]
-	mov [shotPos],ax
+	mov ax,[shots+si] ; this should be 0
+	mov [shotPosX],ax ; loads in x
 	inc si
 	inc si 
-	mov ax,[shots+si]
-	mov [shotPos+2],ax 
-	call calcShotPos
+	mov ax,[shots+si] ; also 0
+	mov [shotPosY],ax 
+	call calcShotPos ; creates shot at 0,0 puts it into shotpos for calc
 	call DrawShot
-	inc si 
+	inc si  
 	inc si
-	inc bx 
-	cmp bx,[shotIndexEnd] 
+	inc bl
+	cmp bl,[shotIndexEnd] 
 	jnz .loop 
 	pop bx
 	pop si 
@@ -145,8 +145,8 @@ ret
 
 
 calcShotPos:
-	mov ax, [shotPos+2]
-	mov cx, [shotPos+2]
+	mov ax, [shotPosY]
+	mov cx, [shotPosY]
 	shl ax,1  
 	shl ax,1  
 	shl ax,1  
@@ -162,7 +162,7 @@ calcShotPos:
 	shl cx,1
 	shl cx,1
 	add ax,cx
-	add ax,[shotPos]
+	add ax,[shotPosX]
 	mov [processedShotPos],ax 
 ret 
 
@@ -238,11 +238,12 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
-shots: dw 0,0,0,0,0,0,0,0
+shots: dw 12,24,12,12,23,23,0,0
 shotIndexStart: db 0
 shotIndexEnd: db 3
 
-shotPos: dw 0,0
+shotPosX: dw 0
+shotPosY: dw 0
 processedShotPos: dw 0,-1,-1,-1,-1
 
 
