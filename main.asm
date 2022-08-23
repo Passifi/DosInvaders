@@ -10,18 +10,14 @@ Start:		CALL	InstallKB
 .gameLoop:	
 		
 		CALL	WaitFrame
-		mov cx, [playerScreenPos]
-		
-		call ClearSprite
-		call calcPlayerPos
-		
+		call 	Render 
 		inc Byte [Counter]
+		mov ax,[playerScreenPos]
+		mov [clearPlayerPos],ax 
+		call calcPlayerPos
 		call SetDirection
-		mov cx, [playerScreenPos]
-		call BlitSprite
-		
 		;call processShots
-		call EnemyHandler
+		call Timer
 		
 		CMP	BYTE [Quit], 1
 JNE	.gameLoop			; loop if counter > 0
@@ -38,41 +34,36 @@ Timer:
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
+	mov ax,[enemyScreenPos]
+	mov [oldEnemiePos],ax 
 	call MoveEnemies
+	call EnemyHandler
 	mov word [Counter],0
 .notReached:
 	ret
 
 SetDirection: ; current issue sometimes a keystroke is ignored 
 				 
-	mov ax, [posY]
 	mov bl, [controlByte]
 	cmp bl, 72 
 	jne .checkLeft
-	sub ax,1
-	mov word [posY],ax
+	dec word [posY]
 	jmp .done 
 
 .checkLeft:
-	mov ax,[posX]
 	cmp bl, 75
 	jne .checkRight
-	sub ax,1
-	mov word [posX],ax 
+	dec word [posX]
 	jmp .done 
 .checkRight:
 	cmp bl, 77
 	jne .checkDown
-	add ax,1
-	mov word [posX],ax
+	inc word [posX]
 	jmp .done 
 .checkDown:
-	mov ax,[posY]
 	cmp bl, 80
 	jne .done
-	add ax,1
-	mov word [posY],ax
-	
+	inc word [posY]	
 .done:
 	ret 
 
@@ -225,13 +216,6 @@ EnemyHandler:
 	mov bl,3
 
 .loop:
-
-	mov cx,[oldEnemiePos] ; erease enemy sprites 
-	call ClearSprite
-	mov cx,[oldEnemiePos+2] 
-	call ClearSprite
-
-	call Timer 
 	; rebuild to loop 
 	; firstEnemy
 	mov word ax,  [enemies + si]
@@ -242,25 +226,7 @@ EnemyHandler:
 	mov word [ePosY],ax
 	call calcEnemyPos
 	mov word cx, [enemyScreenPos]
-	mov [oldEnemiePos],cx 
-	call BlitSprite
-	; secondEnemy
-	inc si
-	inc si
-	mov word ax,[enemies + si]
-	mov word [ePosX],ax
-	inc si
-	inc si 
-	mov word ax,[enemies + si]
-	mov word [ePosY],ax
-	call calcEnemyPos
-	mov word cx, [enemyScreenPos]
-	mov [oldEnemiePos+2],cx
-	call BlitSprite
 	
-	
-	
-
 	
 ret 
 
@@ -283,6 +249,9 @@ shotIndexEnd: db 3
 shotPosX: dw 0
 shotPosY: dw 0
 processedShotPos: dw 0,-1,-1,-1,-1
+clearPlayerPos: dw 0
+clearEnemyPos: dw 0,0 
+
 
 
 enemieArrLength: db 2

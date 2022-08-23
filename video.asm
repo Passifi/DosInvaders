@@ -33,7 +33,17 @@ RestoreVideo:	; return to text mode 0x03
 		MOV	AX, 0x03
 		INT	0x10
 		RET
-
+Render: 
+	
+	mov cx, [clearPlayerPos]
+	call ClearSprite
+	mov cx,[playerScreenPos]
+	call BlitSprite
+	mov cx,[oldEnemiePos]
+	call ClearSprite
+	mov cx,[enemyScreenPos]
+	call BlitSprite
+ret 
 
 ClearSprite:
 	push di 
@@ -41,9 +51,9 @@ ClearSprite:
 	
 	mov dl,0
 .loop: 
-		mov cx,SpriteWitdth
-		mov ax,0xff
-		rep STOSB
+		mov cx,SpriteWitdth/2
+		mov ax,0xffff
+		rep STOSW 
 		mov ax,di 
 		add ax,ScreenWidth-SpriteWitdth
 		mov di,ax 
@@ -90,16 +100,14 @@ clearScreen:
 		push si 
 		mov di, 0 
 		mov dx,0
-	.loop: 
-		mov cx,ScreenWidth/2
-		mov ax,0xff
-		rep STOSW ; mov data in ax cx times to position di 
-		mov ax,di ; moves di up by one line of screen space
-		add ax,ScreenWidth
-		mov di,ax 
+		inc byte [Color]
+	.loops: 
+		mov cx,320
+		mov ax,[Color]
+		rep STOSB ; mov data in ax cx times to position di 
 		inc dx
-		cmp dx,ScreenHeight 
-	jnz .loop
+		cmp dx,200 
+	jnz .loops
 		pop si 
 		pop di
 RET
