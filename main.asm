@@ -44,34 +44,26 @@ Timer:
 
 SetDirection: ; current issue sometimes a keystroke is ignored 
 				 
-	mov ax, [posY]
 	mov bl, [controlByte]
 	cmp bl, 72 
 	jne .checkLeft
-	sub ax,1
-	mov word [posY],ax
+	dec word [posY]
 	jmp .done 
 
 .checkLeft:
-	mov ax,[posX]
 	cmp bl, 75
 	jne .checkRight
-	sub ax,1
-	mov word [posX],ax 
+	dec word [posX]
 	jmp .done 
 .checkRight:
 	cmp bl, 77
 	jne .checkDown
-	add ax,1
-	mov word [posX],ax
+	inc word [posX]
 	jmp .done 
 .checkDown:
-	mov ax,[posY]
 	cmp bl, 80
 	jne .done
-	add ax,1
-	mov word [posY],ax
-	
+	inc word [posY]	
 .done:
 	ret 
 
