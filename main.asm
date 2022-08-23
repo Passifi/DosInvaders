@@ -11,16 +11,13 @@ Start:		CALL	InstallKB
 		
 		CALL	WaitFrame
 		call 	Render 
-
+		inc Byte [Counter]
 		mov ax,[playerScreenPos]
 		mov [clearPlayerPos],ax 
 		call calcPlayerPos
-		
-		inc Byte [Counter]
 		call SetDirection
-		
 		;call processShots
-		call EnemyHandler
+		call Timer
 		
 		CMP	BYTE [Quit], 1
 JNE	.gameLoop			; loop if counter > 0
@@ -37,7 +34,10 @@ Timer:
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
+	mov ax,[enemyScreenPos]
+	mov [oldEnemiePos],ax 
 	call MoveEnemies
+	call EnemyHandler
 	mov word [Counter],0
 .notReached:
 	ret
@@ -216,9 +216,6 @@ EnemyHandler:
 	mov bl,3
 
 .loop:
-
-
-	call Timer 
 	; rebuild to loop 
 	; firstEnemy
 	mov word ax,  [enemies + si]
@@ -229,7 +226,7 @@ EnemyHandler:
 	mov word [ePosY],ax
 	call calcEnemyPos
 	mov word cx, [enemyScreenPos]
-	mov [oldEnemiePos],cx 
+	
 	
 ret 
 
