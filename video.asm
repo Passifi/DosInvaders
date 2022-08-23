@@ -33,7 +33,16 @@ RestoreVideo:	; return to text mode 0x03
 		MOV	AX, 0x03
 		INT	0x10
 		RET
-
+Render: 
+	mov cx, [clearPlayerPos]
+	call ClearSprite
+	mov cx,[playerScreenPos]
+	call BlitSprite
+	mov cx,[oldEnemiePos]
+	call ClearSprite
+	mov cx,[enemyScreenPos]
+	call BlitSprite
+ret 
 
 ClearSprite:
 	push di 

@@ -10,15 +10,14 @@ Start:		CALL	InstallKB
 .gameLoop:	
 		
 		CALL	WaitFrame
-		mov cx, [playerScreenPos]
-		
-		call ClearSprite
+		call 	Render 
+
+		mov ax,[playerScreenPos]
+		mov [clearPlayerPos],ax 
 		call calcPlayerPos
 		
 		inc Byte [Counter]
 		call SetDirection
-		mov cx, [playerScreenPos]
-		call BlitSprite
 		
 		;call processShots
 		call EnemyHandler
@@ -226,10 +225,6 @@ EnemyHandler:
 
 .loop:
 
-	mov cx,[oldEnemiePos] ; erease enemy sprites 
-	call ClearSprite
-	mov cx,[oldEnemiePos+2] 
-	call ClearSprite
 
 	call Timer 
 	; rebuild to loop 
@@ -243,24 +238,6 @@ EnemyHandler:
 	call calcEnemyPos
 	mov word cx, [enemyScreenPos]
 	mov [oldEnemiePos],cx 
-	call BlitSprite
-	; secondEnemy
-	inc si
-	inc si
-	mov word ax,[enemies + si]
-	mov word [ePosX],ax
-	inc si
-	inc si 
-	mov word ax,[enemies + si]
-	mov word [ePosY],ax
-	call calcEnemyPos
-	mov word cx, [enemyScreenPos]
-	mov [oldEnemiePos+2],cx
-	call BlitSprite
-	
-	
-	
-
 	
 ret 
 
@@ -283,6 +260,9 @@ shotIndexEnd: db 3
 shotPosX: dw 0
 shotPosY: dw 0
 processedShotPos: dw 0,-1,-1,-1,-1
+clearPlayerPos: dw 0
+clearEnemyPos: dw 0,0 
+
 
 
 enemieArrLength: db 2
