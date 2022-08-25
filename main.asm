@@ -69,6 +69,13 @@ SetDirection: ; current issue sometimes a keystroke is ignored
 .done:
 	ret 
 
+spawnShot: 
+
+	mov ax,[posX]
+	mov bx,[posY]
+	mov [shotPosX],ax
+	mov [shotPosY],bx
+ret 
 calcPlayerPos:
 	mov ax, [posY]
 	mov cx, [posY]
@@ -114,6 +121,8 @@ calcEnemyPos:
 ret 
 
 calcShotPos:
+	mov ax, [processedShotPos]
+	mov [oldShotPos],ax
 	mov ax, [shotPosY]
 	mov cx, [shotPosY]
 	shl ax,1  
@@ -204,7 +213,8 @@ shotIndexEnd: db 3
 shotPosX: dw 10
 shotPosY: dw 180
 shotMomentum: dw -2
-processedShotPos: dw 
+processedShotPos: dw 0
+oldShotPos: dw 0 
 clearPlayerPos: dw 0
 clearEnemyPos: dw 0,0 
 

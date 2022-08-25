@@ -35,6 +35,7 @@ RestoreVideo:	; return to text mode 0x03
 		RET
 Render: 
 	
+	
 	mov cx, [clearPlayerPos]
 	call ClearSprite
 	mov cx,[playerScreenPos]
@@ -43,9 +44,29 @@ Render:
 	call ClearSprite
 	mov cx,[enemyScreenPos]
 	call BlitSprite
+	mov cx, [oldShotPos]
+	call ClearShot
 	call DrawShot
 	
 ret 
+
+ClearShot:
+	push di 
+	mov di,cx
+	
+	mov dl,0
+.loop: 
+		mov cx,3
+		mov ax,0xffff
+		rep STOSB 
+		mov ax,di 
+		add ax,ScreenWidth-3
+		mov di,ax 
+		inc dl
+		cmp dl, 8
+		jnz .loop
+	pop di
+		RET
 
 ClearSprite:
 	push di 
