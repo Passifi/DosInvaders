@@ -14,10 +14,12 @@ Start:		CALL	InstallKB
 		inc Byte [Counter]
 		mov ax,[playerScreenPos]
 		mov [clearPlayerPos],ax 
+		
 		call calcPlayerPos
 		call SetDirection
-		;call processShots
-		call Timer
+		call Timer ; handles enemy Logic clearly needs a better name 
+		call moveShot 
+		call calcShotPos
 		
 		CMP	BYTE [Quit], 1
 JNE	.gameLoop			; loop if counter > 0
@@ -111,66 +113,6 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
-processShots:
-	push BX
-	push si
-	mov bl,[shotIndexStart] ; should be 0
-	shl bl,1  ; should still be 0
-	mov si,bx 
-	shr bx,1  ; should still be 0
-.loop:
-	mov ax,[shots+si] ; this should be 0
-	mov [shotPosX],ax ; loads in x
-	inc si
-	inc si 
-	mov ax,[shots+si] ; also 0
-	mov [shotPosY],ax 
-	;inc byte [shots+si] causes a crash... Why?
-	call calcShotPos ; creates shot at 0,0 puts it into shotpos for calc
-	call DrawShot
-	inc si  
-	inc si
-	inc bl
-	cmp bl,[shotIndexEnd] 
-	jnz .loop 
-	pop bx
-	pop si 
-	
-ret 
-
-processShotsErase:
-	push BX
-	push si
-	mov bl,[shotIndexStart] ; should be 0
-	shl bl,1  ; should still be 0
-	mov si,bx 
-	shr bx,1  ; should still be 0
-.loop:
-	mov ax,[shots+si] ; this should be 0
-	mov [shotPosX],ax ; loads in x
-	inc si
-	inc si 
-	mov ax,[shots+si] ; also 0
-	mov [shotPosY],ax 
-	;inc byte [shots+si] causes a crash... Why?
-	call calcShotPos ; creates shot at 0,0 puts it into shotpos for calc
-	mov cx, [processedShotPos]
-	call ClearSprite
-	inc si  
-	inc si
-	inc bl
-	cmp bl,[shotIndexEnd] 
-	jnz .loop 
-	pop bx
-	pop si 
-	dec word [shots+1] 
-	dec word [shots+3]
-	dec word [shots+5]
-	
-ret 
-	
-
-
 calcShotPos:
 	mov ax, [shotPosY]
 	mov cx, [shotPosY]
@@ -192,6 +134,19 @@ calcShotPos:
 	add ax,[shotPosX]
 	mov [processedShotPos],ax 
 ret 
+
+
+;spawnShot 	
+moveShot:
+	mov ax,[shotPosY]
+	add ax,[shotMomentum]
+	mov [shotPosY],ax 
+ret 
+;calculateShotPositon for ScreenArray ;  
+;Collision 
+;after render Logic 
+; move current Shot position into into ClearShotPos 
+
 
 MoveEnemies: 
 	push si 
@@ -246,9 +201,10 @@ shots: dw 12,180,12,180,23,180,0,0
 shotIndexStart: db 0
 shotIndexEnd: db 3
 
-shotPosX: dw 0
-shotPosY: dw 0
-processedShotPos: dw 0,-1,-1,-1,-1
+shotPosX: dw 10
+shotPosY: dw 180
+shotMomentum: db -2
+processedShotPos: dw 0
 clearPlayerPos: dw 0
 clearEnemyPos: dw 0,0 
 

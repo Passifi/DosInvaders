@@ -34,7 +34,7 @@ RestoreVideo:	; return to text mode 0x03
 		INT	0x10
 		RET
 Render: 
-	
+	cli
 	mov cx, [clearPlayerPos]
 	call ClearSprite
 	mov cx,[playerScreenPos]
@@ -43,6 +43,8 @@ Render:
 	call ClearSprite
 	mov cx,[enemyScreenPos]
 	call BlitSprite
+	call DrawShot
+	sti
 ret 
 
 ClearSprite:
@@ -116,14 +118,14 @@ DrawShot:
 		push si 
 		push di
 		mov di, [processedShotPos]
-		mov si,24
+		
 		mov dl,0
 .loop: 
-		mov cx,2
+		mov cx,3
 		mov ax,[Color] 
 		rep STOSB ; mov data in ax cx times to position di 
 		mov ax,di ; moves di up by one line of screen space
-		add ax,ScreenWidth-2
+		add ax,ScreenWidth-3
 		mov di,ax 
 		inc dl  
 		cmp dl,8 
