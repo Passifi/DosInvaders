@@ -34,7 +34,7 @@ RestoreVideo:	; return to text mode 0x03
 		INT	0x10
 		RET
 Render: 
-	cli
+	
 	mov cx, [clearPlayerPos]
 	call ClearSprite
 	mov cx,[playerScreenPos]
@@ -44,7 +44,7 @@ Render:
 	mov cx,[enemyScreenPos]
 	call BlitSprite
 	call DrawShot
-	sti
+	
 ret 
 
 ClearSprite:

@@ -203,8 +203,8 @@ shotIndexEnd: db 3
 
 shotPosX: dw 10
 shotPosY: dw 180
-shotMomentum: db -2
-processedShotPos: dw 0
+shotMomentum: dw -2
+processedShotPos: dw 
 clearPlayerPos: dw 0
 clearEnemyPos: dw 0,0 
 
