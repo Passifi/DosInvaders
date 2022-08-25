@@ -31,8 +31,14 @@ RestoreKB:	PUSH	DX
 KBHandler:	PUSH	AX
 		push si 
 		
-		mov byte [controlByte],0 ; reset control byte 
+		mov byte [controlByte],0 ; reset control byte
+		 
 		IN	AL, 0x60			; get key event
+		cmp al, 0x01
+		jne .escTest
+		call spawnShot
+		jmp .done
+	.escTest:	
 		CMP	AL, 0x01			; ESC pressed?
 		JNE	.testDirs
 		MOV	[Quit], AL
