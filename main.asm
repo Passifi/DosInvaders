@@ -120,9 +120,16 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
+
 calcShotPos:
+	mov bx, 0
 	mov ax, [processedShotPos]
 	mov [oldShotPos],ax
+	mov ax,[cs:shots+bx]
+	mov [shotPosX],ax 
+	add bx,2 
+	mov ax,[cs:shots+bx]
+	mov [shotPosY],ax  
 	mov ax, [shotPosY]
 	mov cx, [shotPosY]
 	shl ax,1  
@@ -147,9 +154,9 @@ ret
 
 ;spawnShot 	
 moveShot:
-	mov ax,[shotPosY]
+	mov ax,[shots+2]
 	add ax,[shotMomentum]
-	mov [shotPosY],ax 
+	mov [shots+2],ax 
 ret 
 ;calculateShotPositon for ScreenArray ;  
 ;Collision 
@@ -206,6 +213,7 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
+shotPointer: dw shots,shots+4,shots+8,shots+12
 shots: dw 12,180,12,180,23,180,0,0
 shotIndexStart: db 0
 shotIndexEnd: db 3
