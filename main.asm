@@ -1,3 +1,42 @@
+%macro calcPos 3
+	mov ax, [%2]
+	mov cx, [%2]
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl ax,1  
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	shl cx,1
+	add ax,cx
+	add ax,[%1]
+	mov [%3],ax 
+%endmacro
+
+%macro MoveEnemies 0 
+	push si 
+	push ax
+	mov si,0
+	mov ax,[enemies+si]
+	inc ax 
+	mov [enemies+si],ax
+
+	add si,4
+	mov ax,[enemies+si]
+	inc ax 
+	mov [enemies+si],ax
+	pop ax	
+	pop si
+%endmacro
+	
+	
 		; tell NASM we want 16-bit assembly language
 		BITS	16
 		ORG	0x100				; DOS loads us here
@@ -15,12 +54,14 @@ Start:		CALL	InstallKB
 		mov ax,[playerScreenPos]
 		mov [clearPlayerPos],ax 
 		
-		call calcPlayerPos
+		;call calcPlayerPos
+		calcPos posX,posY,playerScreenPos
 		call SetDirection
-		call Timer ; handles enemy Logic clearly needs a better name 
+		call EnemyBlock ; handles enemy Logic clearly needs a better name 
 		call moveShot 
 		call calcShotPos
 		
+
 		CMP	BYTE [Quit], 1
 JNE	.gameLoop			; loop if counter > 0
 		CALL	RestoreVideo
@@ -32,13 +73,13 @@ JNE	.gameLoop			; loop if counter > 0
 
 
 
-Timer: 
+EnemyBlock: 
 
 	CMP Byte [Counter],WaitInterval
 	jnz .notReached 
 	mov ax,[enemyScreenPos]
 	mov [oldEnemiePos],ax 
-	call MoveEnemies
+	MoveEnemies
 	call EnemyHandler
 	mov word [Counter],0
 .notReached:
@@ -76,27 +117,6 @@ spawnShot:
 	mov [shotPosX],ax
 	mov [shotPosY],bx
 ret 
-calcPlayerPos:
-	mov ax, [posY]
-	mov cx, [posY]
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	add ax,cx
-	add ax,[posX]
-	mov [playerScreenPos],ax 
-ret 
 
 calcEnemyPos:
 	mov ax, [ePosY]
@@ -120,36 +140,25 @@ calcEnemyPos:
 	mov [enemyScreenPos],ax 
 ret 
 
+
 calcShotPos:
+	mov bx, 0
 	mov ax, [processedShotPos]
 	mov [oldShotPos],ax
-	mov ax, [shotPosY]
-	mov cx, [shotPosY]
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl ax,1  
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	shl cx,1
-	add ax,cx
-	add ax,[shotPosX]
-	mov [processedShotPos],ax 
-ret 
+	mov ax,[cs:shots+bx]
+	mov [shotPosX],ax 
+	add bx,2 
+	mov ax,[cs:shots+bx]
+	mov [shotPosY],ax  
+	calcPos shotPosX,shotPosY,processedShotPos
+	ret
 
 
 ;spawnShot 	
 moveShot:
-	mov ax,[shotPosY]
+	mov ax,[shots+2]
 	add ax,[shotMomentum]
-	mov [shotPosY],ax 
+	mov [shots+2],ax 
 ret 
 ;calculateShotPositon for ScreenArray ;  
 ;Collision 
@@ -157,22 +166,6 @@ ret
 ; move current Shot position into into ClearShotPos 
 
 
-MoveEnemies: 
-	push si 
-	push ax
-	mov si,0
-	mov ax,[enemies+si]
-	inc ax 
-	mov [enemies+si],ax
-
-	add si,4
-	mov ax,[enemies+si]
-	inc ax 
-	mov [enemies+si],ax
-	pop ax	
-	pop si
-	ret 
-	
 
 EnemyHandler:
 	
@@ -194,6 +187,7 @@ EnemyHandler:
 	
 ret 
 
+.data
 Quit:		DB	0
 playerScreenPos:	DW 0
 posX:	DW 12
@@ -206,6 +200,7 @@ ePosX: dw 0
 ePosY: dw 0
 enemies: dw 160,122,160,12
 oldEnemiePos: dw 0,0
+shotPointer: dw shots,shots+4,shots+8,shots+12
 shots: dw 12,180,12,180,23,180,0,0
 shotIndexStart: db 0
 shotIndexEnd: db 3

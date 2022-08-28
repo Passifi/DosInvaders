@@ -84,7 +84,7 @@ ClearSprite:
 		cmp dl, SpriteWitdth
 		jnz .loop
 	pop di
-		RET
+		ret
 
 ;so in order to change this to a spriteBlit I think all I need to do is to load in 
 ;data instead of one value in ax this means a different copy command(which I do think exists if I recall correcly)
